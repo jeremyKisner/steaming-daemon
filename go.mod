@@ -7,4 +7,7 @@ require (
 	github.com/go-audio/wav v1.1.0
 )
 
-require github.com/go-audio/riff v1.0.0 // indirect
+require (
+	github.com/go-audio/riff v1.0.0 // indirect
+	github.com/gorilla/mux v1.8.1 // indirect
+)
