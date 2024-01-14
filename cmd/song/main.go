@@ -1,6 +1,6 @@
 package main
 
-import "github.com/jeremyKisner/streaming-daemon/audioproducer"
+import "github.com/jeremyKisner/streaming-daemon/internal/audioproducer"
 
 func main() {
 	Producer := &audioproducer.Producer{}
