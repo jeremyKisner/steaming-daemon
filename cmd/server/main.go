@@ -10,13 +10,14 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/", handlehealthz)
+	r.HandleFunc("/", handleHealthz)
 	r.HandleFunc("/beepstream", handleBeepStream)
 	fmt.Println("server started at http://localhost:8080/")
 	http.ListenAndServe(":8080", r)
 }
 
-func handlehealthz(w http.ResponseWriter, r *http.Request) {
+func handleHealthz(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("health endpoint called")
 	w.Write([]byte("OK"))
 }
 
