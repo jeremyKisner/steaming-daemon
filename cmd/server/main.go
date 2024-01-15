@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/jeremyKisner/streaming-daemon/internal/audioproducer"
+	"github.com/jeremyKisner/streaming-daemon/internal"
 )
 
 func main() {
@@ -21,6 +21,6 @@ func handlehealthz(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleBeepStream(w http.ResponseWriter, r *http.Request) {
-	Producer := audioproducer.Producer{}
+	Producer := internal.AudioProducer{}
 	Producer.StreamRandomBeeps(w, r)
 }

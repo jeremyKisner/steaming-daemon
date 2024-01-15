@@ -1,4 +1,4 @@
-package audioproducer
+package internal
 
 import (
 	"fmt"
@@ -11,12 +11,12 @@ import (
 	"github.com/go-audio/wav"
 )
 
-type Producer struct{}
+type AudioProducer struct{}
 
 const sampleRate = 44100
 const frequency = 440
 
-func (p *Producer) EncodeWAV(fileName string, data []int) {
+func (p *AudioProducer) EncodeWAV(fileName string, data []int) {
 	f, err := os.Create(fileName)
 	if err != nil {
 		panic(err)
@@ -34,7 +34,7 @@ func (p *Producer) EncodeWAV(fileName string, data []int) {
 	}
 }
 
-func (p *Producer) GenerateBeep() []int {
+func (p *AudioProducer) GenerateBeep() []int {
 	out := make([]int, sampleRate*30)
 	for i := range out {
 		out[i] = int(32767.0 * math.Sin(float64(i)*2.0*math.Pi*frequency/sampleRate))
@@ -42,7 +42,7 @@ func (p *Producer) GenerateBeep() []int {
 	return out
 }
 
-func (p *Producer) GenerateSong() []int {
+func (p *AudioProducer) GenerateSong() []int {
 	// Define the frequencies for the notes C, D, E, F, G, A, B
 	notes := []float64{261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88}
 
@@ -60,7 +60,7 @@ func (p *Producer) GenerateSong() []int {
 	return out
 }
 
-func (p *Producer) StreamRandomBeeps(w http.ResponseWriter, r *http.Request) {
+func (p *AudioProducer) StreamRandomBeeps(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("StreamRandomBeeps called")
 	w.Header().Set("Content-Type", "audio/wav")
 	w.Header().Set("Access-Control-Allow-Origin", "*")

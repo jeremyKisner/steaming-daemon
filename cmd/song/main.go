@@ -1,9 +1,9 @@
 package main
 
-import "github.com/jeremyKisner/streaming-daemon/internal/audioproducer"
+import "github.com/jeremyKisner/streaming-daemon/internal"
 
 func main() {
-	Producer := &audioproducer.Producer{}
+	Producer := &internal.AudioProducer{}
 	// Generate a song
 	song := Producer.GenerateSong()
 	// Encode the song into a WAV file

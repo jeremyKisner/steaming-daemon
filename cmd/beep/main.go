@@ -1,9 +1,9 @@
 package main
 
-import "github.com/jeremyKisner/streaming-daemon/internal/audioproducer"
+import "github.com/jeremyKisner/streaming-daemon/internal"
 
 func main() {
-	Producer := &audioproducer.Producer{}
+	Producer := &internal.AudioProducer{}
 	// Generate a beep sound
 	beep := Producer.GenerateBeep()
 	// Encode the beep sound into a WAV file
