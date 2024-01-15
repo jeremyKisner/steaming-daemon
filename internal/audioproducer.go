@@ -60,7 +60,7 @@ func (p *AudioProducer) GenerateSong() []int {
 	return out
 }
 
-func (p *AudioProducer) StreamRandomBeeps(w http.ResponseWriter, r *http.Request) {
+func (p *AudioProducer) StreamRandomBeeps(w http.ResponseWriter) {
 	fmt.Println("StreamRandomBeeps called")
 	w.Header().Set("Content-Type", "audio/wav")
 	w.Header().Set("Access-Control-Allow-Origin", "*")

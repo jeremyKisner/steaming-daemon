@@ -22,5 +22,5 @@ func handlehealthz(w http.ResponseWriter, r *http.Request) {
 
 func handleBeepStream(w http.ResponseWriter, r *http.Request) {
 	Producer := internal.AudioProducer{}
-	Producer.StreamRandomBeeps(w, r)
+	Producer.StreamRandomBeeps(w)
 }
