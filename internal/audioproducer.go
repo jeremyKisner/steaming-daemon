@@ -87,7 +87,7 @@ func (p *AudioProducer) StreamRandomBeeps(w http.ResponseWriter) {
 		duration := 0.1 + rand.Float64()*0.3
 
 		for s := 0; s < int(duration*float64(p.SampleRate)); s++ {
-			sample := int(32767.0 * math.Sin(float64(i)*2.0*math.Pi*float64(freq)/float64(p.SampleRate)))
+			sample := int(32767.0 * math.Sin(float64(s)*2.0*math.Pi*freq/float64(p.SampleRate)))
 			buf.Data = append(buf.Data, sample)
 		}
 	}
