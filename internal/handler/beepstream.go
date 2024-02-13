@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/jeremyKisner/streaming-daemon/internal"
+	"github.com/jeremyKisner/streaming-daemon/internal/audioproducer"
 )
 
 func BeepStream(w http.ResponseWriter, r *http.Request) {
-	internal.NewAudioProducer().StreamRandomBeeps(w)
+	audioproducer.NewAudioProducer().StreamRandomBeeps(w)
 }
