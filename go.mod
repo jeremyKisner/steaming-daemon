@@ -8,4 +8,8 @@ require (
 	github.com/gorilla/mux v1.8.1
 )
 
-require github.com/go-audio/riff v1.0.0 // indirect
+require (
+	github.com/aws/aws-sdk-go v1.50.18 // indirect
+	github.com/go-audio/riff v1.0.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+)
