@@ -1,14 +1,18 @@
 version: '3'
 
 services:
-  dynamodb:
-    image: amazon/dynamodb-local
-    container_name: dynamodb
+  postgres:
+    image: postgres:latest
+    container_name: postgres
     ports:
-      - "8000:8000"
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
     volumes:
-      - dynamodb_data:/data
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  dynamodb_data:
+  postgres_data:
     driver: local

@@ -6,10 +6,7 @@ require (
 	github.com/go-audio/audio v1.0.0
 	github.com/go-audio/wav v1.1.0
 	github.com/gorilla/mux v1.8.1
+	github.com/lib/pq v1.10.9
 )
 
-require (
-	github.com/aws/aws-sdk-go v1.50.18 // indirect
-	github.com/go-audio/riff v1.0.0 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
-)
+require github.com/go-audio/riff v1.0.0 // indirect
