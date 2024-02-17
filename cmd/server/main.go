@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/jeremyKisner/streaming-daemon/internal/handler"
@@ -13,8 +14,7 @@ import (
 )
 
 func ListTables() {
-	connStr := "host=postgres user=myuser password=mypassword dbname=mydatabase sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
