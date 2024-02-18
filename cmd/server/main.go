@@ -11,17 +11,18 @@ import (
 )
 
 func main() {
-	connector, err := database.CreateDB()
+	db, err := database.CreateConnection()
 	if err != nil {
-		fmt.Println("had error creating connection", err)
+		fmt.Println("error starting app", err)
 		return
 	}
-	connector.CreateTable()
-	connector.ListTables()
-	defer connector.Close()
+	defer db.Close()
+	db.CreateAudioTable()
 	port := ":8080"
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler.Healthz)
+	r.HandleFunc("/tables", handler.GetTables(db))
+	r.HandleFunc("/audio/insert", handler.InsertAudio(db))
 	r.HandleFunc("/beepstream", handler.BeepStream)
 	fmt.Printf("server started at http://localhost%s/\n", port)
 	http.ListenAndServe(port, r)
