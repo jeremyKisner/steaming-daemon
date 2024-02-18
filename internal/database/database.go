@@ -29,7 +29,18 @@ func CreateDB() (PostgresConnector, error) {
 	db := PostgresConnector{
 		DB: conn,
 	}
+	fmt.Println("database connection started")
 	return db, nil
+}
+
+func (db *PostgresConnector) Close() {
+	if db.DB != nil {
+		err := db.DB.Close()
+		if err != nil {
+			fmt.Println("had issue closing database")
+		}
+		fmt.Println("database closed")
+	}
 }
 
 func (db *PostgresConnector) ListTables() {
@@ -59,9 +70,10 @@ func (db *PostgresConnector) CreateTable() {
 		artist VARCHAR(2500) NOT NULL,
 		album VARCHAR(2500) NOT NULL,
 		pickup_url VARCHAR(2500), 
-		plays INT`)
+		plays INT)`)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
+	fmt.Println("created table")
 }
