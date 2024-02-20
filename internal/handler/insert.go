@@ -7,9 +7,10 @@ import (
 	"net/http"
 
 	"github.com/jeremyKisner/streaming-daemon/internal/database"
+	"github.com/jeremyKisner/streaming-daemon/internal/record"
 )
 
-func InsertAudio(db database.PostgresConnector) http.HandlerFunc {
+func AudioInsert(db database.PostgresConnector) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -22,16 +23,17 @@ func InsertAudio(db database.PostgresConnector) http.HandlerFunc {
 			return
 		}
 		defer r.Body.Close()
-		var requestBody database.InsertRequest
+		var requestBody record.AudioRecord
 		err = json.Unmarshal(body, &requestBody)
 		if err != nil {
 			http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+			w.Write([]byte("Insert Failed. Error decoding JSON."))
 			return
 		}
-		if db.InsertAudio(requestBody) {
+		if db.InsertNewAudioRecord(requestBody) {
 			w.Write([]byte("Insert Success"))
 		} else {
-			w.Write([]byte("Insert Failed"))
+			w.Write([]byte("Insert Failed. Please contact Admin."))
 		}
 	}
 }

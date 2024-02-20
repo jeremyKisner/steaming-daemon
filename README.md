@@ -3,7 +3,7 @@
 # Local Development
 
 ## Docker
-1. Launch application
+1. Launch Application
 ```
 docker compose up --build -d
 ```

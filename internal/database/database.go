@@ -8,6 +8,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/jeremyKisner/streaming-daemon/internal/record"
 	_ "github.com/lib/pq"
 )
 
@@ -51,6 +52,7 @@ func (db *PostgresConnector) Close() {
 	}
 }
 
+// GetTables loads the current tables available.
 func (db *PostgresConnector) GetTables() []string {
 	rows, err := db.DB.QueryContext(context.Background(), "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
 	if err != nil {
@@ -75,13 +77,13 @@ func (db *PostgresConnector) GetTables() []string {
 	return db.Tables
 }
 
+// CreateAudioTable is used on application startup to create the database for audio records.
 func (db *PostgresConnector) CreateAudioTable() {
 	rows, err := db.DB.QueryContext(context.Background(), `CREATE TABLE IF NOT EXISTS audio (
 		internal_id SERIAL PRIMARY KEY,
 		name VARCHAR(2500) NOT NULL,
 		artist VARCHAR(2500) NOT NULL,
 		album VARCHAR(2500) NOT NULL,
-		pickup_url VARCHAR(2500), 
 		plays INT)`)
 	if err != nil {
 		log.Fatal(err)
@@ -90,32 +92,28 @@ func (db *PostgresConnector) CreateAudioTable() {
 	fmt.Println("created table")
 }
 
-type InsertRequest struct {
-	Name      string `json:"name"`
-	Artist    string `json:"artist"`
-	Album     string `json:"album"`
-	PickupURL string `json:"pickup_url"`
+// InsertNewAudioRecord inserts a new audio record into the database.
+func (db *PostgresConnector) InsertNewAudioRecord(req record.AudioRecord) bool {
+	// new records should have zero plays
+	req.Plays = 0
+	return db.InsertAudioRecord(req)
 }
 
-func (db *PostgresConnector) InsertAudio(req InsertRequest) bool {
+// InsertAudioRecord inserts an audio record into the database.
+func (db *PostgresConnector) InsertAudioRecord(req record.AudioRecord) bool {
 	result, err := db.DB.Exec(`
-	INSERT INTO audio (name, artist, album, pickup_url, plays)
-	VALUES ($1, $2, $3, $4, $5)`,
-		req.Name, req.Artist, req.Album, req.PickupURL, 0)
+	INSERT INTO audio (name, artist, album, plays)
+	VALUES ($1, $2, $3, $4)`,
+		req.Name, req.Artist, req.Album, req.Plays)
 	if err != nil {
-		// Handle error
 		fmt.Println("Error executing INSERT statement:", err)
 		return false
 	}
-
-	// Get the number of rows affected by the INSERT operation
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		// Handle error
 		fmt.Println("Error getting rows affected:", err)
 		return false
 	}
-
 	fmt.Printf("%d rows inserted\n", rowsAffected)
 	return true
 }
