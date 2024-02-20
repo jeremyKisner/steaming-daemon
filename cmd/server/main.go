@@ -22,7 +22,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler.Healthz)
 	r.HandleFunc("/tables", handler.GetTables(db))
-	r.HandleFunc("/audio/insert", handler.AudioInsert(db))
+	r.HandleFunc("/audio/insert", handler.HandleAudioInsert(db))
 	r.HandleFunc("/beepstream", handler.BeepStream)
 	fmt.Printf("server started at http://localhost%s/\n", port)
 	http.ListenAndServe(port, r)

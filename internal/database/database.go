@@ -21,6 +21,7 @@ type PostgresConnector struct {
 	Tables []string
 }
 
+// CreateConnection establishes a singleton connection pool.
 func CreateConnection() (PostgresConnector, error) {
 	var db PostgresConnector
 	once.Do(func() {
@@ -42,6 +43,7 @@ func CreateConnection() (PostgresConnector, error) {
 	return db, nil
 }
 
+// Close calls to close the connection pool.
 func (db *PostgresConnector) Close() {
 	if db.DB != nil {
 		err := db.DB.Close()
@@ -84,6 +86,7 @@ func (db *PostgresConnector) CreateAudioTable() {
 		name VARCHAR(2500) NOT NULL,
 		artist VARCHAR(2500) NOT NULL,
 		album VARCHAR(2500) NOT NULL,
+		pickup_url VARCHAR(2500),
 		plays INT)`)
 	if err != nil {
 		log.Fatal(err)
@@ -102,9 +105,9 @@ func (db *PostgresConnector) InsertNewAudioRecord(req record.AudioRecord) bool {
 // InsertAudioRecord inserts an audio record into the database.
 func (db *PostgresConnector) InsertAudioRecord(req record.AudioRecord) bool {
 	result, err := db.DB.Exec(`
-	INSERT INTO audio (name, artist, album, plays)
-	VALUES ($1, $2, $3, $4)`,
-		req.Name, req.Artist, req.Album, req.Plays)
+	INSERT INTO audio (name, artist, album, pickup_url, plays)
+	VALUES ($1, $2, $3, $4, $5)`,
+		req.Name, req.Artist, req.Album, req.PickupURL, req.Plays)
 	if err != nil {
 		fmt.Println("Error executing INSERT statement:", err)
 		return false
