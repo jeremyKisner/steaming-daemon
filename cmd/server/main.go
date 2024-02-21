@@ -23,6 +23,7 @@ func main() {
 	r.HandleFunc("/", handler.Healthz)
 	r.HandleFunc("/tables", handler.GetTables(db))
 	r.HandleFunc("/audio/insert", handler.HandleAudioInsert(db))
+	r.HandleFunc("/audio/{id}", handler.HandleAudioExtraction(db))
 	r.HandleFunc("/beepstream", handler.BeepStream)
 	fmt.Printf("server started at http://localhost%s/\n", port)
 	http.ListenAndServe(port, r)

@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -109,14 +110,37 @@ func (db *PostgresConnector) InsertAudioRecord(req record.AudioRecord) bool {
 	VALUES ($1, $2, $3, $4, $5)`,
 		req.Name, req.Artist, req.Album, req.PickupURL, req.Plays)
 	if err != nil {
-		fmt.Println("Error executing INSERT statement:", err)
+		fmt.Println("error executing INSERT statement:", err)
 		return false
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		fmt.Println("Error getting rows affected:", err)
+		fmt.Println("error getting rows affected", err)
 		return false
 	}
 	fmt.Printf("%d rows inserted\n", rowsAffected)
 	return true
+}
+
+func (db *PostgresConnector) ExtractAudioByInternalID(internalID int) []byte {
+	var name, artist, album, pickupURL string
+	var plays int
+	err := db.DB.QueryRow("SELECT name, artist, album, pickup_url, plays FROM audio WHERE internal_id = $1", internalID).Scan(&name, &artist, &album, &pickupURL, &plays)
+	if err != nil {
+		fmt.Println("error getting rows affected:", err)
+		return []byte("Error")
+	}
+	r := &record.AudioRecord{
+		Name:      name,
+		Artist:    artist,
+		Album:     album,
+		PickupURL: pickupURL,
+		Plays:     plays,
+	}
+	jsonBytes, err := json.Marshal(r)
+	if err != nil {
+		fmt.Println("error marshaling bytes", err)
+		return []byte("Error")
+	}
+	return jsonBytes
 }

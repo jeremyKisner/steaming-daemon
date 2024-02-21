@@ -5,8 +5,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"github.com/jeremyKisner/streaming-daemon/internal/database"
 	"github.com/jeremyKisner/streaming-daemon/internal/record"
 )
@@ -90,6 +92,21 @@ func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 			w.Write([]byte("Insert Success"))
 		} else {
 			w.Write([]byte("Insert Failed. Please contact Admin."))
+			return
 		}
+	}
+}
+
+func HandleAudioExtraction(db database.PostgresConnector) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		strID := vars["id"]
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			fmt.Println("error converting int", strID, err)
+			http.Error(w, "Error creating file on server", http.StatusInternalServerError)
+			return
+		}
+		w.Write([]byte(db.ExtractAudioByInternalID(id)))
 	}
 }
