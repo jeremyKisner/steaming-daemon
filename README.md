@@ -7,12 +7,12 @@
 ```
 docker compose up --build -d
 ```
-1. Insert Record
+2. Insert Record
 ```
 go run ./cmd/audio/insert/main.go -name "to be titled" -artist "me" -album "album title" -filepath examples/beep.wav
 ```
-1. Check Record. Go to [http://localhost:8080/audio/1](http://localhost:8080/audio/1)
-1. Tear down
+3. Check Record. Go to [http://localhost:8080/audio/1](http://localhost:8080/audio/1)
+4. Tear down
 ```
 docker compose down
 ```
