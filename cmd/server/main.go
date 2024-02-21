@@ -24,6 +24,7 @@ func main() {
 	r.HandleFunc("/tables", handler.GetTables(db))
 	r.HandleFunc("/audio/insert", handler.HandleAudioInsert(db))
 	r.HandleFunc("/audio/{id}", handler.HandleAudioExtraction(db))
+	// TODO add a play by id
 	r.HandleFunc("/beepstream", handler.BeepStream)
 	fmt.Printf("server started at http://localhost%s/\n", port)
 	http.ListenAndServe(port, r)
