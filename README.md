@@ -2,12 +2,17 @@
 
 # Local Development
 
-## Build Docker Image
+## Docker
+1. Launch Application
 ```
-docker build -t streaming-daemon .
+docker compose up --build -d
 ```
-
-## Run Docker Image
+1. Insert Record
 ```
-docker run -p 8080:8080 streaming-daemon
+go run ./cmd/audio/insert/main.go -name "to be titled" -artist "me" -album "album title" -filepath examples/beep.wav
+```
+1. Check Record. Go to [http://localhost:8080/audio/1](http://localhost:8080/audio/1)
+1. Tear down
+```
+docker compose down
 ```
