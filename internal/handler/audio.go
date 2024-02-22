@@ -3,8 +3,10 @@ package handler
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -107,6 +109,33 @@ func HandleAudioExtraction(db database.PostgresConnector) http.HandlerFunc {
 			http.Error(w, "Error creating file on server", http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte(db.ExtractAudioByInternalID(id)))
+		a := db.ExtractAudioByInternalID(id)
+		file, err := os.Open(a.PickupURL)
+		if err != nil {
+			http.Error(w, "Error opening audio file", http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+		contentType := getContentType(a.PickupURL)
+		w.Header().Set("Content-Type", contentType)
+		_, err = io.Copy(w, file)
+		if err != nil {
+			log.Println("Error streaming audio file:", err)
+			return
+		}
+	}
+}
+
+func getContentType(filename string) string {
+	extension := strings.ToLower(filepath.Ext(filename))
+	switch extension {
+	case ".mp3":
+		return "audio/mpeg"
+	case ".wav":
+		return "audio/wav"
+	case ".ogg":
+		return "audio/ogg"
+	default:
+		return "application/octet-stream"
 	}
 }
