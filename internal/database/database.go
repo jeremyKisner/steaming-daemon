@@ -8,6 +8,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/cenkalti/backoff/v4"
 	"github.com/jeremyKisner/streaming-daemon/internal/record"
 	_ "github.com/lib/pq"
 )
@@ -30,9 +31,17 @@ func CreateConnection() (PostgresConnector, error) {
 			fmt.Println("error initializing database", err)
 			return
 		}
-		err = conn.Ping()
+		ping := func() error {
+			fmt.Println("pinging database...")
+			err := conn.Ping()
+			if err != nil {
+				fmt.Println("pinging database failed. retrying...")
+			}
+			return err
+		}
+		err = backoff.Retry(ping, backoff.NewExponentialBackOff())
 		if err != nil {
-			fmt.Println("ping failed", err)
+			fmt.Println("failed to ping, check database connection", err)
 			return
 		}
 		db = PostgresConnector{
