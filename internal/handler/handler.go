@@ -11,36 +11,27 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/jeremyKisner/streaming-daemon/internal/audioproducer"
 	"github.com/jeremyKisner/streaming-daemon/internal/database"
 	"github.com/jeremyKisner/streaming-daemon/internal/record"
 )
 
-// HandleFileUpload handles audio file uploads
-func HandleFileUpload(w http.ResponseWriter, r *http.Request) {
-	// Parse the multipart form data
-	err := r.ParseMultipartForm(10 << 20) // 10 MB limit
-	if err != nil {
-		http.Error(w, "Unable to parse form", http.StatusBadRequest)
-		return
-	}
+func HandleHealthz(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("health endpoint called")
+	w.Write([]byte("OK"))
+}
 
-	// Get the file from the request
-	file, handler, err := r.FormFile("audioFile")
-	if err != nil {
-		http.Error(w, "Error retrieving file from form", http.StatusInternalServerError)
-		return
+func HandleTables(db database.PostgresConnector) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("get tables called")
+		t := db.GetTables()
+		w.Write([]byte(strings.Join(t, "")))
 	}
-	defer file.Close()
+}
 
-	// Save the file to disk
-	filePath := "/path/to/uploaded/files/" + handler.Filename
-	destination, err := os.Create(filePath)
-	if err != nil {
-		http.Error(w, "Error creating file on server", http.StatusInternalServerError)
-		return
-	}
-	defer destination.Close()
-	io.Copy(destination, file)
+func BeepStream(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("beepstream called")
+	audioproducer.NewAudioProducer().StreamRandomBeeps(w)
 }
 
 func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {

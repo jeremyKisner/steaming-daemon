@@ -20,8 +20,8 @@ func main() {
 	db.CreateAudioTable()
 	port := ":8080"
 	r := mux.NewRouter()
-	r.HandleFunc("/", handler.Healthz)
-	r.HandleFunc("/tables", handler.GetTables(db))
+	r.HandleFunc("/healthz", handler.HandleHealthz)
+	r.HandleFunc("/tables", handler.HandleTables(db))
 	r.HandleFunc("/audio/insert", handler.HandleAudioInsert(db))
 	r.HandleFunc("/audio/{id}", handler.HandleAudioExtraction(db))
 	r.HandleFunc("/beepstream", handler.BeepStream)
