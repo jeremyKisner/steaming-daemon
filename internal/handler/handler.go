@@ -57,6 +57,7 @@ func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 		soundName := r.FormValue("name")
 		artist := r.FormValue("artist")
 		album := r.FormValue("album")
+		description := r.FormValue("description")
 		wd, err := os.Getwd()
 		if err != nil {
 			http.Error(w, "Server error", http.StatusInternalServerError)
@@ -76,10 +77,11 @@ func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 		fmt.Printf("Uploaded file: %s\n", handler.Filename)
 
 		record := record.AudioRecord{
-			Name:      soundName,
-			Artist:    artist,
-			Album:     album,
-			PickupURL: filePath,
+			Name:        soundName,
+			Artist:      artist,
+			Album:       album,
+			Description: description,
+			PickupURL:   filePath,
 		}
 		if db.InsertNewAudioRecord(record) {
 			w.Write([]byte("Insert Success"))

@@ -96,6 +96,7 @@ func (db *PostgresConnector) CreateAudioTable() {
 		artist VARCHAR(2500) NOT NULL,
 		album VARCHAR(2500) NOT NULL,
 		pickup_url VARCHAR(2500),
+		description VARCHAR(2500),
 		plays INT)`)
 	if err != nil {
 		log.Fatal(err)
@@ -114,9 +115,9 @@ func (db *PostgresConnector) InsertNewAudioRecord(req record.AudioRecord) bool {
 // InsertAudioRecord inserts an audio record into the database.
 func (db *PostgresConnector) InsertAudioRecord(req record.AudioRecord) bool {
 	result, err := db.DB.Exec(`
-	INSERT INTO audio (name, artist, album, pickup_url, plays)
-	VALUES ($1, $2, $3, $4, $5)`,
-		req.Name, req.Artist, req.Album, req.PickupURL, req.Plays)
+	INSERT INTO audio (name, artist, album, pickup_url, description, plays)
+	VALUES ($1, $2, $3, $4, $5, $6)`,
+		req.Name, req.Artist, req.Album, req.PickupURL, req.Description, req.Plays)
 	if err != nil {
 		fmt.Println("error executing INSERT statement:", err)
 		return false
