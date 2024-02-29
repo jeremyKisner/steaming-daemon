@@ -10,14 +10,20 @@ import (
 	"os"
 )
 
+/*
+This script is available for automating file uploads from command line.
+
+	go run cmd/audio/insert/main.go -filepath examples/song.wav -name "to be titled" -artist "me" -album "album title"
+*/
+var (
+	soundName, artist, album, filePath string
+)
+
 func main() {
-	var (
-		soundName, artist, album, filePath string
-	)
-	flag.StringVar(&soundName, "name", "", "name of audio")
-	flag.StringVar(&artist, "artist", "", "artist of audio")
-	flag.StringVar(&album, "album", "", "album of audio")
-	flag.StringVar(&filePath, "filepath", "", "filepath of audio")
+	flag.StringVar(&filePath, "filepath", "", "required: filepath of audio")
+	flag.StringVar(&soundName, "name", "", "optional: name of audio")
+	flag.StringVar(&artist, "artist", "", "optional: artist of audio")
+	flag.StringVar(&album, "album", "", "optional: album of audio")
 	flag.Parse()
 
 	// open the audio file

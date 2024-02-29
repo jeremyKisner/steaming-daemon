@@ -11,29 +11,18 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jeremyKisner/streaming-daemon/internal/audioproducer"
 	"github.com/jeremyKisner/streaming-daemon/internal/database"
 	"github.com/jeremyKisner/streaming-daemon/internal/record"
 )
 
+// HandleHealthz returns OK if server is healthy.
 func HandleHealthz(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("health endpoint called")
 	w.Write([]byte("OK"))
 }
 
-func HandleTables(db database.PostgresConnector) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("get tables called")
-		t := db.GetTables()
-		w.Write([]byte(strings.Join(t, "")))
-	}
-}
-
-func BeepStream(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("beepstream called")
-	audioproducer.NewAudioProducer().StreamRandomBeeps(w)
-}
-
+// HandleAudioInsert processes a POST request containing audio information and file.
+// It saves the file to the local filesystem, and inserts info in the database.
 func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -75,8 +64,8 @@ func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 		defer destination.Close()
 		io.Copy(destination, file)
 		fmt.Printf("Uploaded file: %s\n", handler.Filename)
-
-		record := record.AudioRecord{
+		// normalize the record before calling a database function.
+		record := record.Audio{
 			Name:        soundName,
 			Artist:      artist,
 			Album:       album,

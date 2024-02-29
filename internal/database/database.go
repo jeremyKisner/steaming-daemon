@@ -106,14 +106,14 @@ func (db *PostgresConnector) CreateAudioTable() {
 }
 
 // InsertNewAudioRecord inserts a new audio record into the database.
-func (db *PostgresConnector) InsertNewAudioRecord(req record.AudioRecord) bool {
+func (db *PostgresConnector) InsertNewAudioRecord(req record.Audio) bool {
 	// new records should have zero plays
 	req.Plays = 0
 	return db.InsertAudioRecord(req)
 }
 
 // InsertAudioRecord inserts an audio record into the database.
-func (db *PostgresConnector) InsertAudioRecord(req record.AudioRecord) bool {
+func (db *PostgresConnector) InsertAudioRecord(req record.Audio) bool {
 	result, err := db.DB.Exec(`
 	INSERT INTO audio (name, artist, album, pickup_url, description, plays)
 	VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -131,15 +131,15 @@ func (db *PostgresConnector) InsertAudioRecord(req record.AudioRecord) bool {
 	return true
 }
 
-func (db *PostgresConnector) ExtractAudioByInternalID(internalID int) *record.AudioRecord {
+func (db *PostgresConnector) ExtractAudioByInternalID(internalID int) *record.Audio {
 	var name, artist, album, pickupURL string
 	var plays int
 	err := db.DB.QueryRow("SELECT name, artist, album, pickup_url, plays FROM audio WHERE internal_id = $1", internalID).Scan(&name, &artist, &album, &pickupURL, &plays)
 	if err != nil {
 		fmt.Println("error getting rows affected:", err)
-		return &record.AudioRecord{}
+		return &record.Audio{}
 	}
-	return &record.AudioRecord{
+	return &record.Audio{
 		Name:      name,
 		Artist:    artist,
 		Album:     album,
