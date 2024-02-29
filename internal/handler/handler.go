@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -83,6 +83,7 @@ func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 
 func HandleAudioExtraction(db database.PostgresConnector) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("info endpoint called")
 		vars := mux.Vars(r)
 		strID := vars["id"]
 		id, err := strconv.Atoi(strID)
@@ -91,10 +92,44 @@ func HandleAudioExtraction(db database.PostgresConnector) http.HandlerFunc {
 			http.Error(w, "Error creating file on server", http.StatusInternalServerError)
 			return
 		}
-		a := db.ExtractAudioByInternalID(id)
+		res, err := db.ExtractAudioByInternalID(id)
+		if err != nil {
+			fmt.Println("error extracting data", strID, err)
+			http.Error(w, "could not find record", http.StatusInternalServerError)
+			return
+		}
+		w.Write(res)
+	}
+}
+
+func HandleAudioPlay(db database.PostgresConnector) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("play endpoint called")
+		vars := mux.Vars(r)
+		strID := vars["id"]
+		id, err := strconv.Atoi(strID)
+		if err != nil {
+			fmt.Println("error converting int", strID, err)
+			http.Error(w, "bad id", http.StatusForbidden)
+			return
+		}
+		res, err := db.ExtractAudioByInternalID(id)
+		if err != nil {
+			fmt.Println("error extracting audio record", strID, err)
+			http.Error(w, "Had error processing response!", http.StatusNotFound)
+			return
+		}
+		var a record.Audio
+		err = json.Unmarshal(res, &a)
+		if err != nil {
+			fmt.Println("error unmarshal audio record", strID, res, err)
+			http.Error(w, "Error unmarshaling data", http.StatusBadRequest)
+			return
+		}
 		file, err := os.Open(a.PickupURL)
 		if err != nil {
-			http.Error(w, "Error opening audio file", http.StatusInternalServerError)
+			fmt.Println("error opening file", strID, a.PickupURL, err)
+			http.Error(w, "Error streaming audio", http.StatusNotFound)
 			return
 		}
 		defer file.Close()
@@ -102,7 +137,8 @@ func HandleAudioExtraction(db database.PostgresConnector) http.HandlerFunc {
 		w.Header().Set("Content-Type", contentType)
 		_, err = io.Copy(w, file)
 		if err != nil {
-			log.Println("Error streaming audio file:", err)
+			fmt.Println("error streaming audio file", strID, err)
+			http.Error(w, "Error streaming audio", http.StatusBadRequest)
 			return
 		}
 	}

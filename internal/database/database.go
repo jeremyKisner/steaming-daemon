@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -131,19 +132,25 @@ func (db *PostgresConnector) InsertAudioRecord(req record.Audio) bool {
 	return true
 }
 
-func (db *PostgresConnector) ExtractAudioByInternalID(internalID int) *record.Audio {
+func (db *PostgresConnector) ExtractAudioByInternalID(internalID int) ([]byte, error) {
 	var name, artist, album, pickupURL string
 	var plays int
 	err := db.DB.QueryRow("SELECT name, artist, album, pickup_url, plays FROM audio WHERE internal_id = $1", internalID).Scan(&name, &artist, &album, &pickupURL, &plays)
 	if err != nil {
 		fmt.Println("error getting rows affected:", err)
-		return &record.Audio{}
+		return []byte{}, err
 	}
-	return &record.Audio{
+	a := &record.Audio{
 		Name:      name,
 		Artist:    artist,
 		Album:     album,
 		PickupURL: pickupURL,
 		Plays:     plays,
 	}
+	bts, err := json.Marshal(a)
+	if err != nil {
+		fmt.Println("had issue marshaling json", err)
+		return []byte{}, err
+	}
+	return bts, nil
 }
