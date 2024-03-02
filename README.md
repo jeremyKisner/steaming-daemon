@@ -1,7 +1,5 @@
 # streaming daemon api
 
-# Local Development
-
 ## Run Locally
 1. Launch Application
 ```
