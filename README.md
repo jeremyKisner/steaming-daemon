@@ -2,7 +2,7 @@
 
 # Local Development
 
-## Run Docker
+## Run Locally
 1. Launch Application
 ```
 docker compose up --build -d
