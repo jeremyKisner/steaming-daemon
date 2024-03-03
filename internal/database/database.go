@@ -97,7 +97,7 @@ func (db *PostgresConnector) CreateAudioTable() {
 		artist VARCHAR(2500) NOT NULL,
 		album VARCHAR(2500) NOT NULL,
 		pickup_url VARCHAR(2500),
-		description VARCHAR(2500),
+		description VARCHAR(5000),
 		plays INT)`)
 	if err != nil {
 		log.Fatal(err)
@@ -132,20 +132,22 @@ func (db *PostgresConnector) InsertAudioRecord(req record.Audio) bool {
 	return true
 }
 
+// ExtractAudioByInternalID returns database row using the internal_id.
 func (db *PostgresConnector) ExtractAudioByInternalID(internalID int) ([]byte, error) {
-	var name, artist, album, pickupURL string
+	var name, artist, album, pickupURL, description string
 	var plays int
-	err := db.DB.QueryRow("SELECT name, artist, album, pickup_url, plays FROM audio WHERE internal_id = $1", internalID).Scan(&name, &artist, &album, &pickupURL, &plays)
+	err := db.DB.QueryRow("SELECT name, artist, album, pickup_url, description, plays FROM audio WHERE internal_id = $1", internalID).Scan(&name, &artist, &album, &pickupURL, &description, &plays)
 	if err != nil {
 		fmt.Println("error getting rows affected:", err)
 		return []byte{}, err
 	}
 	a := &record.Audio{
-		Name:      name,
-		Artist:    artist,
-		Album:     album,
-		PickupURL: pickupURL,
-		Plays:     plays,
+		Name:        name,
+		Artist:      artist,
+		Album:       album,
+		PickupURL:   pickupURL,
+		Description: description,
+		Plays:       plays,
 	}
 	bts, err := json.Marshal(a)
 	if err != nil {

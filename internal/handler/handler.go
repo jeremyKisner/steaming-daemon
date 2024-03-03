@@ -43,18 +43,23 @@ func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 		}
 		defer file.Close()
 
-		soundName := r.FormValue("name")
-		artist := r.FormValue("artist")
-		album := r.FormValue("album")
-		description := r.FormValue("description")
+		// initialize record
+		record := record.Audio{
+			Name:        r.FormValue("name"),
+			Artist:      r.FormValue("artist"),
+			Album:       r.FormValue("album"),
+			Description: r.FormValue("description"),
+		}
+
 		wd, err := os.Getwd()
 		if err != nil {
 			http.Error(w, "Server error", http.StatusInternalServerError)
 			return
 		}
-		filePath := wd + "/audio/" + artist + "_" + album + "_" + soundName + "_" + handler.Filename
+		filePath := wd + "/audio/" + record.Artist + "_" + record.Album + "_" + record.Name + "_" + handler.Filename
 		filePath = strings.ReplaceAll(filePath, " ", "_")
-		fmt.Println(filePath)
+		fmt.Println(record.Name, record.Artist, record.Album, record.Description)
+		record.PickupURL = filePath
 		destination, err := os.Create(filePath)
 		if err != nil {
 			fmt.Println("error creating file on server", err)
@@ -64,14 +69,7 @@ func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 		defer destination.Close()
 		io.Copy(destination, file)
 		fmt.Printf("Uploaded file: %s\n", handler.Filename)
-		// normalize the record before calling a database function.
-		record := record.Audio{
-			Name:        soundName,
-			Artist:      artist,
-			Album:       album,
-			Description: description,
-			PickupURL:   filePath,
-		}
+
 		if db.InsertNewAudioRecord(record) {
 			w.Write([]byte("Insert Success"))
 		} else {
