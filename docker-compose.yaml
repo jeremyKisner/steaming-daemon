@@ -21,8 +21,11 @@ services:
       DATABASE_URL: "postgres://postgres:postgres@go_db/postgres?sslmode=disable"
     ports:
       - "8080:8080"
+    volumes:
+      - app_data:/app/audio
     depends_on:
       - go_db
 
 volumes:
   postgres_data: {}
+  app_data:
