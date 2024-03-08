@@ -1,6 +1,7 @@
 package record
 
 type Audio struct {
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Artist      string `json:"artist"`
 	Album       string `json:"album"`

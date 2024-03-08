@@ -134,7 +134,7 @@ func HandleAudioPlay(db database.PostgresConnector) http.HandlerFunc {
 		contentType := getContentType(a.PickupURL)
 		w.Header().Set("Content-Type", contentType)
 		_, err = io.Copy(w, file)
-		// TODO set up a play increment
+		db.IncrementPlays(a)
 		if err != nil {
 			fmt.Println("error streaming audio file", strID, err)
 			http.Error(w, "Error streaming audio", http.StatusBadRequest)

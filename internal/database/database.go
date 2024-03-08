@@ -142,6 +142,7 @@ func (db *PostgresConnector) ExtractAudioByInternalID(internalID int) ([]byte, e
 		return []byte{}, err
 	}
 	a := &record.Audio{
+		ID:          internalID,
 		Name:        name,
 		Artist:      artist,
 		Album:       album,
@@ -155,4 +156,23 @@ func (db *PostgresConnector) ExtractAudioByInternalID(internalID int) ([]byte, e
 		return []byte{}, err
 	}
 	return bts, nil
+}
+
+// IncrementPlays locks to increment a play.
+func (db *PostgresConnector) IncrementPlays(a record.Audio) {
+	var lock sync.Mutex
+	lock.Lock()
+	defer lock.Unlock()
+	a.Plays += 1
+	result, err := db.DB.Exec("UPDATE audio SET plays=$1 WHERE internal_id = $2", a.Plays, a.ID)
+	if err != nil {
+		fmt.Println("had issue marshaling json", err)
+		return
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		fmt.Println("error getting rows affected", err)
+		return
+	}
+	fmt.Printf("%d rows updated\n", rowsAffected)
 }
