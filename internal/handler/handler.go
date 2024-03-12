@@ -79,6 +79,7 @@ func HandleAudioInsert(db database.PostgresConnector) http.HandlerFunc {
 	}
 }
 
+// HandleAudioExtraction pulls record info from database.
 func HandleAudioExtraction(db database.PostgresConnector) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("info endpoint called")
@@ -100,6 +101,8 @@ func HandleAudioExtraction(db database.PostgresConnector) http.HandlerFunc {
 	}
 }
 
+// HandleAudioPlay pulls record from database, and plays file from location.
+// It also mutexes a lock on the record and increments the play.
 func HandleAudioPlay(db database.PostgresConnector) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("play endpoint called")
@@ -143,6 +146,7 @@ func HandleAudioPlay(db database.PostgresConnector) http.HandlerFunc {
 	}
 }
 
+// getContentType determines the file type based on file extension.
 func getContentType(filename string) string {
 	extension := strings.ToLower(filepath.Ext(filename))
 	switch extension {

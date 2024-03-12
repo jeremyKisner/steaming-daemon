@@ -1,5 +1,6 @@
 package record
 
+// Audio represents a record of audio.
 type Audio struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`

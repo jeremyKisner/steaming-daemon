@@ -40,6 +40,7 @@ func CreateConnection() (PostgresConnector, error) {
 			}
 			return err
 		}
+		// try to ping the server, retries if it fails.
 		err = backoff.Retry(ping, backoff.NewExponentialBackOff())
 		if err != nil {
 			fmt.Println("failed to ping, check database connection", err)
