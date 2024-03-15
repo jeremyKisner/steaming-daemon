@@ -10,7 +10,7 @@ docker compose up --build -d
 ```
 go run ./cmd/audioinsert/main.go -name "to be titled" -artist "me" -album "album title" -filepath examples/song.wav
 ```
-3. Check Record. Go to [http://localhost:8080/audio/1](http://localhost:8080/audio/1)
+3. Check Record. Go to [http://localhost:8082/audio/1](http://localhost:8082/audio/1)
 4. Tear down
 ```
 docker compose down

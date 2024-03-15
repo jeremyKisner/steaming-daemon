@@ -35,7 +35,7 @@ func main() {
 	defer file.Close()
 
 	// create a new HTTP POST request
-	url := "http://localhost:8080/audio/insert"
+	url := "http://localhost:8082/audio/insert"
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("audioFile", filePath)

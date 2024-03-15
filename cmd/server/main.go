@@ -18,7 +18,7 @@ func main() {
 	}
 	defer db.Close()
 	db.CreateAudioTable()
-	port := ":8080"
+	port := ":8082"
 	r := mux.NewRouter()
 	r.HandleFunc("/healthz", handler.HandleHealthz)
 	r.HandleFunc("/audio/insert", handler.HandleAudioInsert(db))
