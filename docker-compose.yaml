@@ -20,7 +20,7 @@ services:
     environment:
       DATABASE_URL: "postgres://postgres:postgres@go_db/postgres?sslmode=disable"
     ports:
-      - "8080:8080"
+      - "8082:8082"
     volumes:
       - app_data:/app/audio
     depends_on:
